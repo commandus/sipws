@@ -47,7 +47,7 @@ sc create "sipws" binPath= <path>\sipws.exe
 sc delete "sipws"  
 
 
-=== Enable SIP transports
+### Enable SIP transports
 
 * UDP -u 5060
 * TCP -t 5060
@@ -57,19 +57,19 @@ sc delete "sipws"
 
 Enable at least one transport.
 
-=== Enable HTTP server
+### Enable HTTP server
 
 HTTP server provide account control.
 * -r 8082 
 
 
-=== Set specific network inteface
+### Set specific network inteface
 
 -i 192.168.43.113  
 
 By default, sipws listen 0.0.0.0 address (all interfases).
 
-=== Enable debug output
+### Enable debug output
 
 * -vvv	debug info
 * -vv	more detailed log
@@ -118,27 +118,27 @@ Provision accounts dynamically
 When -r, --httpport=<port> option is set, POST Json requests to add or delete SIP accounts, start or stop service, clear accounts.
 Key must be provided. sipws compare key with valid keys. If key is valid, operation is permitted.
 
-=== Start, stop, clear
+### Start, stop, clear
 
-==== Request
+#### Request
 
 {“q”:”<signal>”, “domain”:””, “key”:”...”}
 
 <signal> = start,stop,clear
 
-==== Response
+#### Response
 
 {“q”:<signal>, “errorcode”:”1”}
 
-=== List
+### List
 
-==== Request
+#### Request
 
 {“q”:”<signal>”, “domain”:””, “key”:”...”}
 
 <signal> = list
 
-==== Response
+#### Response
 
 Success:
 
@@ -151,9 +151,9 @@ Error:
 <address>: { "avail", "proto", "origin", "key", "cn", "description", "id", "domain", "host", "line", "tag", "rinstance", "image", "port",	"expire", "registered",	"updated"
 }
 
-=== Provide user registry
+### Provide user registry
 
-==== Request
+#### Request
 
 {“q”:”<signal>”, “domain”:””, “key”:”...”, “data”:[<entry>,...], “v”:124}
 
@@ -163,7 +163,7 @@ Error:
 
 c: +,- - add(edit), delete
 
-==== Response
+#### Response
 
 {“q”:”put”, “errorcode”:”1”, “v”:123}
 
@@ -172,11 +172,6 @@ v: version number before update (0..)
 
 When -r, --httpport=<port> option is set, GET Json requests registered accounts.
 
-
-Keys
-====
-
-When 
 
 Other options
 =============
