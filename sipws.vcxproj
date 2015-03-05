@@ -1,0 +1,140 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{0C5C9900-A716-4215-901C-451D0D00FB9E}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>sipws</RootNamespace>
+    <ProjectName>sipws</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>C:\lib\libevent-2.0.21\WIN32-Code;C:\lib\libevent-2.0.21\include;C:\lib\openssl-1.0.1e\include;C:\lib\jsoncpp\include;C:\lib\argtable2-13\src;C:\lib\boost;C:\lib\websocketpp;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\lib\libevent-2.0.21\lib;C:\lib\openssldbg\lib;C:\lib\jsoncpp\libdbg;C:\lib\boost\stage\lib;C:\lib\argtable2-13\lib;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <IncludePath>C:\lib\libevent-2.0.21\WIN32-Code;C:\lib\libevent-2.0.21\include;C:\lib\openssl-1.0.1e\include;C:\lib\jsoncpp\include;C:\lib\argtable2-13\src;C:\lib\boost;C:\lib\websocketpp;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\lib\libevent-2.0.21\lib;C:\lib\openssl\lib;C:\lib\jsoncpp\lib;C:\lib\boost\stage\lib;C:\lib\argtable2-13\lib;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>libevent.lib;libevent_extras.lib;libeay32.lib;ssleay32.lib;jsoncpp.lib;argtable2.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>libevent.lib;libevent_extras.lib;libeay32.lib;ssleay32.lib;jsoncpp.lib;argtable2.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="argsplit.h" />
+    <ClInclude Include="AuthHeaderMD5.h" />
+    <ClInclude Include="ConfigWSListener.h" />
+    <ClInclude Include="connectionmetadata.h" />
+    <ClInclude Include="consolelocale.h" />
+    <ClInclude Include="Deamonize.h" />
+    <ClInclude Include="HTTPListener.h" />
+    <ClInclude Include="Logger.h" />
+    <ClInclude Include="MessageDigest.h" />
+    <ClInclude Include="RegistryEntry.h" />
+    <ClInclude Include="RegistryRequest.h" />
+    <ClInclude Include="RegistryResponse.h" />
+    <ClInclude Include="signalhandler.h" />
+    <ClInclude Include="SipAddress.h" />
+    <ClInclude Include="SipDialog.h" />
+    <ClInclude Include="SipListener.h" />
+    <ClInclude Include="SipMessage.h" />
+    <ClInclude Include="SipRegistry.h" />
+    <ClInclude Include="SipServer.h" />
+    <ClInclude Include="sipwsUtil.h" />
+    <ClInclude Include="strptime.h" />
+    <ClInclude Include="websocketendpoint.h" />
+    <ClInclude Include="sipws.h" />
+    <ClInclude Include="WSListener.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="argsplit.cpp" />
+    <ClCompile Include="AuthHeaderMD5.cpp" />
+    <ClCompile Include="ConfigWSListener.cpp" />
+    <ClCompile Include="connectionmetadata.cpp" />
+    <ClCompile Include="consolelocale.cpp" />
+    <ClCompile Include="Deamonize.cpp" />
+    <ClCompile Include="HTTPListener.cpp" />
+    <ClCompile Include="Logger.cpp" />
+    <ClCompile Include="MessageDigest.cpp" />
+    <ClCompile Include="RegistryEntry.cpp" />
+    <ClCompile Include="RegistryRequest.cpp" />
+    <ClCompile Include="RegistryResponse.cpp" />
+    <ClCompile Include="signalhandler.cpp" />
+    <ClCompile Include="SipAddress.cpp" />
+    <ClCompile Include="SipDialog.cpp" />
+    <ClCompile Include="SipListener.cpp" />
+    <ClCompile Include="SipMessage.cpp" />
+    <ClCompile Include="SipRegistry.cpp" />
+    <ClCompile Include="SipServer.cpp" />
+    <ClCompile Include="sipwsUtil.cpp" />
+    <ClCompile Include="strptime.cpp" />
+    <ClCompile Include="websocketendpoint.cpp" />
+    <ClCompile Include="sipws.cpp" />
+    <ClCompile Include="WSListener.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
