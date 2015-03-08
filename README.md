@@ -67,7 +67,7 @@ HTTP server provide account control.
 
 -i 192.168.43.113  
 
-By default, sipws listen 0.0.0.0 address (all interfases).
+By default, sipws listen 0.0.0.0 address (all interfaces).
 
 ### Enable debug output
 
