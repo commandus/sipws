@@ -32,7 +32,7 @@ void SipDialog::updateLocation(struct sockaddr_in *sender, SipMessage &m, SipMes
 {
 	int remotePort = parseInt(m.getHeaderParameter("V", "rport"), sender->sin_port);
 	// int remotePort = sender->sin_port;
-	SipAddress aFrom(m.Proto, m.Headers["F"]);	// not "M" Contact
+	SipAddress aFrom(m.Proto, m.Headers["T"]);	// not "M" Contact
 	int expires = m.getExpires();
 	mRegistry->put(m.Proto, aFrom.Id, mRegistry->Domain, aFrom.Tag, addr2String(sender), remotePort, expires, registered);
 
@@ -75,7 +75,10 @@ std::vector<SipMessage> &SipDialog::mkResponse(struct sockaddr_in *svcsocket, st
 	bool toRegistered = toExists && toAddress.Availability == AVAIL_YES;
 	SipAddress fromAddress;
 	bool fromExists = mRegistry->getByAddress(m.Headers["F"], fromAddress);
-	
+
+	if (toExists)
+		m.Key = toAddress.Id + "@" + toAddress.Domain;
+
 	if ((m.mCommand != C_REGISTER) && fromAddress.isExpired(now))
 	{
 		if (authenticate(getCommandName(m.mCommand), m.Headers))

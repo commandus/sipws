@@ -402,6 +402,9 @@ std::string SipAddress::toContact()
 	b << "<sip:" << Id << "@" << Domain << ":" << Port;
 	std::string p(toString(Proto));
 	if (!p.empty())
-		b << ";proto=" << p << ">";;
+		b << ";proto=" << p << ">";
+
+	if (!Tag.empty())
+		b << ";tag=" << Tag;
 	return b.str();
 }
