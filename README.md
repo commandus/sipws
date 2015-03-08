@@ -161,7 +161,7 @@ Error:
 
 <entry>: {“o”:”+”, “u”:”<user name>”, “k”:”<password>”, “cn”:”common name”, “description”:””, “i”:”<image uri>”}
 
-c: +,- - add(edit), delete
+o: +,-  add(edit),delete
 
 #### Response
 
