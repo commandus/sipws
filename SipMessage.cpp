@@ -44,7 +44,7 @@ SipMessage::SipMessage() : mCommand(C_INVALID), mCode(0), mCommandParam(""), Pro
 }
 
 SipMessage::SipMessage(TProto proto, struct sockaddr_in *svcaddr, struct sockaddr_in *sender, const SipMessage &request)
-	: Proto(proto), Address(*sender), mCommand(C_RESPONSE), mCode(OK), Key(""), sentCode(0), conn(NULL)
+	: Proto(proto), Address(*sender), mCommand(C_RESPONSE), mCode(OK), sentCode(0), conn(NULL)
 {
 	if (request.mCommand == C_INVALID)
 		return;
@@ -52,6 +52,7 @@ SipMessage::SipMessage(TProto proto, struct sockaddr_in *svcaddr, struct sockadd
 		Headers = request.Headers;
 	if (Headers.find("L") == Headers.end())
 		Headers["L"] = "0";	// Content-Length
+	Key = request.Key;
 	Headers["User-Agent"] ="sipws";
 	Headers["Allow"] = ALLOWED_METHODS;
 }
