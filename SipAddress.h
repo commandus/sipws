@@ -49,6 +49,15 @@ public:
 	~SipAddress();
 
 	const std::string getKey();
+	/*
+	sip:100@acme.com
+	*/
+	const std::string SipAddress::getAddress();
+
+	/*
+	<sip:100@acme.com>;tag=11
+	*/
+	const std::string SipAddress::getAddressTag();
 	Json::Value toJson(bool deep);
 	
 	/**

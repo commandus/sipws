@@ -248,6 +248,29 @@ const std::string SipAddress::getKey()
 	return s.str();
 }
 
+/*
+<sip:100@acme.com>;tag=11
+*/
+const std::string SipAddress::getAddressTag()
+{
+	std::stringstream s;
+	s << "<sip:" << Id << "@" << Domain << ">";
+	if (!Tag.empty()) 
+		s << ";tag=" << Tag;
+	return s.str();
+}
+
+/*
+sip:100@acme.com
+*/
+const std::string SipAddress::getAddress()
+{
+	std::stringstream s;
+	s << "sip:" << Id << "@" << Domain;
+	return s.str();
+}
+
+
 SipAddress::SipAddress(const Json::Value &value)
 {
 	Availability = parseAvailability(value["avail"].asString());

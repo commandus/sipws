@@ -57,8 +57,8 @@ public:
 	* @param port IP port number
 	* @return true if it is my address!
 	*/
-	void put(TProto proto, const std::string &id, const std::string &domain, struct sockaddr_in *address, int expire, time_t registered);
-	void put(TProto proto, const std::string &id, const std::string &domain, const std::string &host, int port, int expire, time_t registered);
+	void put(TProto proto, const std::string &id, const std::string &domain, const std::string &tag, struct sockaddr_in *address, int expire, time_t registered);
+	void put(TProto proto, const std::string &id, const std::string &domain, const std::string &tag, const std::string &host, int port, int expire, time_t registered);
 	bool setAvailability(TProto proto, const std::string &id, const std::string &domain, TAvailability value);
 	bool exist(const std::string &key);
 	bool get(const std::string &key, SipAddress &value);

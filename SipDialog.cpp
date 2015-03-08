@@ -32,14 +32,14 @@ void SipDialog::updateLocation(struct sockaddr_in *sender, SipMessage &m, SipMes
 {
 	int remotePort = parseInt(m.getHeaderParameter("V", "rport"), sender->sin_port);
 	// int remotePort = sender->sin_port;
-	SipAddress aFrom(m.Proto, m.Headers["T"]);	// not "M" Contact
-	time_t expires(m.getExpires());
-	mRegistry->put(m.Proto, aFrom.Id, mRegistry->Domain, addr2String(sender), remotePort, expires, registered);
+	SipAddress aFrom(m.Proto, m.Headers["F"]);	// not "M" Contact
+	int expires = m.getExpires();
+	mRegistry->put(m.Proto, aFrom.Id, mRegistry->Domain, aFrom.Tag, addr2String(sender), remotePort, expires, registered);
 
 	// delete Authorization header
 	r.rmHeader("Authorization");
 	// change expires
-	std::string sexpires(time_t2Dec(expires));
+	std::string sexpires(int2Dec(expires));
 	r.Headers["Expires"] = sexpires;
 	// r.addHeaderParameter("M", "expires", sexpires);	// 2015/03/04
 	r.addHeaderParameter("V", "received", addr2String(sender));
@@ -68,7 +68,8 @@ std::vector<SipMessage> &SipDialog::mkResponse(struct sockaddr_in *svcsocket, st
 	std::string branch = m.getHeaderParameter("V", "branch");
 	if (branch.length() == 0)
 		branch = "branch=z9hG4bK" + getTag();
-
+	else
+		branch = "branch=" + branch;
 	SipAddress toAddress;
 	bool toExists = mRegistry->getByAddress(m.Headers["T"], toAddress);
 	bool toRegistered = toExists && toAddress.Availability == AVAIL_YES;
@@ -114,12 +115,12 @@ std::vector<SipMessage> &SipDialog::mkResponse(struct sockaddr_in *svcsocket, st
 		// inform callee
 		{
 			SipMessage ackCancel(m);
-			ackCancel.mCommandParam = "sip:" + toAddress.getKey();
+			ackCancel.mCommandParam = toAddress.getAddress();
 			if (!string2addr(toAddress.Host.c_str(), &ackCancel.Address))
 				break;
 			ackCancel.Proto = toAddress.Proto;
 			ackCancel.setPort(toAddress.Port);
-			ackCancel.Headers["T"] = "<sip:" + toAddress.getKey() + ">";
+			ackCancel.Headers["T"] = toAddress.getAddressTag();
 			validateTransport(toAddress.Proto, ackCancel.Headers);
 			ackCancel.addHeaderParameter("V", "received", addr2String(sender));
 			result.push_back(ackCancel);
@@ -141,12 +142,12 @@ std::vector<SipMessage> &SipDialog::mkResponse(struct sockaddr_in *svcsocket, st
 			// inform callee
 			SipMessage invite(m);
 			invite.mCommand = C_INVITE;
-			invite.mCommandParam = "sip:" + toAddress.getKey();
+			invite.mCommandParam = toAddress.getAddress();
 			if (!string2addr(toAddress.Host.c_str(), &invite.Address))
 				break;
 			invite.Proto = toAddress.Proto;
 			invite.setPort(toAddress.Port);
-			invite.Headers["T"] = "<sip:" + toAddress.getKey() + ">";
+			invite.Headers["T"] = toAddress.getAddressTag();
 			validateTransport(toAddress.Proto, invite.Headers);
 			std::string a;
 			if (sender->sin_port == 0)
@@ -198,12 +199,12 @@ std::vector<SipMessage> &SipDialog::mkResponse(struct sockaddr_in *svcsocket, st
 			}
 			// ?!! request callee?
 			SipMessage options(m);
-			options.mCommandParam = "sip:" + toAddress.getKey();
+			options.mCommandParam = toAddress.getAddress();
 			if (!string2addr(toAddress.Host.c_str(), &options.Address))
 				break;
 			options.Proto = toAddress.Proto;
 			options.setPort(toAddress.Port);
-			options.Headers["T"] = "<sip:" + toAddress.getKey() + ">";
+			options.Headers["T"] = toAddress.getAddressTag();
 			validateTransport(toAddress.Proto, options.Headers);
 			options.addHeaderParameter("V", "received", addr2String(sender));
 			result.push_back(options);
@@ -222,7 +223,7 @@ std::vector<SipMessage> &SipDialog::mkResponse(struct sockaddr_in *svcsocket, st
 
 			bye.Proto = toAddress.Proto;
 			bye.setPort(toAddress.Port);
-			bye.Headers["T"] = "<sip:" + toAddress.getKey() + ">";
+			bye.Headers["T"] = toAddress.getAddressTag();
 			validateTransport(toAddress.Proto, bye.Headers);
 			// bye.addHeaderParameter("V", "received", addr2String(sender));
 			result.push_back(bye);
@@ -246,14 +247,16 @@ std::vector<SipMessage> &SipDialog::mkResponse(struct sockaddr_in *svcsocket, st
 			result.push_back(r);
 			// send message to callee
 			SipMessage message(m);
-			// message.mCommandParam = "sip:" + toAddress.getKey();
+			// message.mCommandParam = "sip:" + toAddress.getAddress();
 			if (!string2addr(toAddress.Host.c_str(), &message.Address))
 				break;
 			message.Proto = toAddress.Proto;
 			message.setPort(toAddress.Port);
-			message.Headers["T"] = "<sip:" + toAddress.getKey() + ">";
+			message.Headers["T"] = toAddress.getAddressTag();
 			// validateTransport(toAddress.Proto, message.Headers);
-			message.Headers["V"] = "SIP/2.0/UDP " + addr2String(svcsocket) + ":" + int2Dec(svcsocket->sin_port) + ";" + branch;
+			
+			message.Headers["V"] = "SIP/2.0/" + toUpper(toString(toAddress.Proto)) + " "
+				+ addr2String(svcsocket) + ":" + int2Dec(svcsocket->sin_port) + ";" + branch;
 			message.Headers["L"] = len;
 			result.push_back(message);
 		}
@@ -352,7 +355,7 @@ std::vector<SipMessage> &SipDialog::processResponse(struct sockaddr_in *svcsocke
 						// InetAddress a; if(!string2addr(m.getHeaderParameter("V", "received"), a));
 						SipAddress fr(proto, m.Headers["T"]);
 						// update location
-						mRegistry->put(proto, fr.Id, mRegistry->Domain, addr2String(&m.Address), port, m.getExpires(), now); // was "a"
+						mRegistry->put(proto, fr.Id, mRegistry->Domain, fr.Tag, addr2String(&m.Address), port, m.getExpires(), now); // was "a"
 					}
 					catch (...)
 					{

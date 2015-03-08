@@ -56,9 +56,9 @@ void SipRegistry::put(SipAddress &value)
 * @param port IP port number
 * @return true if it is my address!
 */
-void SipRegistry::put(TProto proto, const std::string &id, const std::string &domain, struct sockaddr_in *address, int expire, time_t registered)
+void SipRegistry::put(TProto proto, const std::string &id, const std::string &domain, const std::string &tag, struct sockaddr_in *address, int expire, time_t registered)
 {
-	put(proto, id, domain, addr2String(address), address->sin_port, expire, registered);
+	put(proto, id, domain, tag, addr2String(address), address->sin_port, expire, registered);
 }
 
 
@@ -71,7 +71,7 @@ void SipRegistry::put(TProto proto, const std::string &id, const std::string &do
 * @param port IP port number
 * @return true if it is my address!
 */
-void SipRegistry::put(TProto proto, const std::string &id, const std::string &domain, const std::string &host, int port, 
+void SipRegistry::put(TProto proto, const std::string &id, const std::string &domain, const std::string &tag, const std::string &host, int port,
 	int expire, time_t registered)
 {
 	std::string key = id + "@" + domain;
@@ -83,6 +83,7 @@ void SipRegistry::put(TProto proto, const std::string &id, const std::string &do
 		a.Domain = domain;
 	if (!id.empty())
 		a.Id = id;
+	a.Tag = tag;
 	a.Host = host;
 	a.Port = port;
 	a.Expire = (expire == 0 ? DEF_EXPIRES : expire);
