@@ -34,6 +34,7 @@ AC_CHECK_LIB(jsoncpp, main, [], AC_MSG_ERROR([Could not find libjsoncpp. Try $ .
 AC_CHECK_LIB(ssl, main, [], AC_MSG_ERROR([Could not find libssl. Try $ ./configure LDFLAGS='-Lyour-ssl-lib-path']))
 AC_CHECK_LIB(crypto, main, [], AC_MSG_ERROR([Could not find libssl. Try $ ./configure LDFLAGS='-Lyour-ssl-lib-path']))
 AC_CHECK_LIB(event, main, [], AC_MSG_ERROR([Could not find libevent. Try $ ./configure LDFLAGS='-Lyour-event-lib-path']))
+AC_CHECK_LIB(dl, dlopen, [], AC_MSG_ERROR([Could not find libdl]))
 #AC_CHECK_HEADERS([boost/thread.hpp], [], AC_MSG_ERROR([Could not find boost/*.hpp. Try $ ./configure CFLAGS='-Iyour-boost-include-path]))
 
 AC_CHECK_HEADERS([fcntl.h])

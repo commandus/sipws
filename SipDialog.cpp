@@ -75,6 +75,9 @@ std::vector<SipMessage> &SipDialog::mkResponse(struct sockaddr_in *svcsocket, st
 	bool toRegistered = toExists && toAddress.Availability == AVAIL_YES;
 	SipAddress fromAddress;
 	bool fromExists = mRegistry->getByAddress(m.Headers["F"], fromAddress);
+	
+	if (fromExists)
+		m.KeyFrom = fromAddress.Id + "@" + fromAddress.Domain;
 
 	if (toExists)
 		m.Key = toAddress.Id + "@" + toAddress.Domain;

@@ -38,7 +38,7 @@ const static std::map<std::string, std::string> HeaderFull {
 	{ "Via", "V" }
 };
 
-SipMessage::SipMessage() : mCommand(C_INVALID), mCode(0), mCommandParam(""), Proto(PROTO_UNKN), Key(""), sentCode(0), conn(NULL)
+SipMessage::SipMessage() : mCommand(C_INVALID), mCode(0), mCommandParam(""), Proto(PROTO_UNKN), Key(""), KeyFrom(""), sentCode(0), conn(NULL)
 {
 	memset(&Address, 0, sizeof(struct sockaddr_in));
 }
@@ -53,6 +53,7 @@ SipMessage::SipMessage(TProto proto, struct sockaddr_in *svcaddr, struct sockadd
 	if (Headers.find("L") == Headers.end())
 		Headers["L"] = "0";	// Content-Length
 	Key = request.Key;
+	KeyFrom = request.KeyFrom;
 	Headers["User-Agent"] ="sipws";
 	Headers["Allow"] = ALLOWED_METHODS;
 }
@@ -68,6 +69,7 @@ SipMessage::SipMessage(const SipMessage &m)
 	Proto = m.Proto;
 	Address = m.Address;
 	Key = m.Key;
+	KeyFrom = m.KeyFrom;
 	sentCode = m.sentCode;
 	conn = m.conn;
 }

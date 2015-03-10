@@ -14,9 +14,12 @@
 #include "Logger.h"
 #include "Deamonize.h"
 #include "argsplit.h"
+#include "LoggerFunc.h"
 
 #define MAXKEYS	10
 const char* progname = "sipws";
+
+void *loggerhandle;
 
 ConfigWSListener config;
 WSListener *wslistener = NULL;
@@ -333,6 +336,8 @@ int main(int argc, char* argv[])
 	v = argsplit(cmdline, &c);
 	v = argappend(&c, argc, argv, c, v);
 	parseCmd(c, v, config, argc);
+	config.cbLogger = loadLogger("logger", "log", &loggerhandle);
+
 	if (config.deamonize)
 		Deamonize deamonize(progname, run, stopRequest, done);
 	else

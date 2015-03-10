@@ -64,8 +64,8 @@ am_sipws_OBJECTS = AuthHeaderMD5.$(OBJEXT) HTTPListener.$(OBJEXT) \
 	SipAddress.$(OBJEXT) SipServer.$(OBJEXT) \
 	websocketendpoint.$(OBJEXT) consolelocale.$(OBJEXT) \
 	RegistryRequest.$(OBJEXT) SipDialog.$(OBJEXT) sipws.$(OBJEXT) \
-	WSListener.$(OBJEXT) Logger.$(OBJEXT) SipListener.$(OBJEXT) \
-	Deamonize.$(OBJEXT) argsplit.$(OBJEXT)
+	WSListener.$(OBJEXT) Logger.$(OBJEXT) LoggerFunc.$(OBJEXT) \
+	SipListener.$(OBJEXT) Deamonize.$(OBJEXT) argsplit.$(OBJEXT)
 sipws_OBJECTS = $(am_sipws_OBJECTS)
 sipws_DEPENDENCIES =
 DEFAULT_INCLUDES = -I.@am__isrc@
@@ -242,7 +242,7 @@ sipws_SOURCES = \
 	ConfigWSListener.cpp    MessageDigest.cpp    signalhandler.cpp     SipRegistry.cpp  strptime.cpp \
 	connectionmetadata.cpp  RegistryEntry.cpp    SipAddress.cpp        SipServer.cpp    websocketendpoint.cpp \
 	consolelocale.cpp       RegistryRequest.cpp  SipDialog.cpp         sipws.cpp        WSListener.cpp \
-	Logger.cpp              SipListener.cpp      Deamonize.cpp         argsplit.cpp
+	Logger.cpp              LoggerFunc.cpp       SipListener.cpp       Deamonize.cpp    argsplit.cpp
 
 sipws_LDADD = \
 	-L/usr/local/lib \
@@ -356,6 +356,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Deamonize.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/HTTPListener.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Logger.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LoggerFunc.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MessageDigest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RegistryEntry.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RegistryRequest.Po@am__quote@

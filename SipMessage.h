@@ -24,6 +24,7 @@ public:
 	struct sockaddr_in Address;
 	// WS/WSS user@domain
 	std::string Key;
+	std::string KeyFrom;
 	void *conn;
 
 	SipMessage();

@@ -219,6 +219,9 @@ bool WSListener::sendMessage(SipMessage &m)
 
 	try
 	{
+		if (config->cbLogger)
+			config->cbLogger(m.mCommand, m.mCode, m.KeyFrom, m.Key, m.mCommand == C_MESSAGE ? m.Sdp : "");
+
 		if (m.Key.empty())
 		{
 			if (m.conn)

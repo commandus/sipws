@@ -2,6 +2,7 @@
 
 void ConfigWSListener::reset()
 {
+	cbLogger = NULL;
 	deamonize = true;
 	requestfilename = "";
 	dbfilename = "";
@@ -34,6 +35,3 @@ ConfigWSListener::ConfigWSListener()
 ConfigWSListener::~ConfigWSListener()
 {
 }
-
-
-

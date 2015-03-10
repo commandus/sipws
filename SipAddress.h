@@ -52,12 +52,12 @@ public:
 	/*
 	sip:100@acme.com
 	*/
-	const std::string SipAddress::getAddress();
+	const std::string getAddress();
 
 	/*
 	<sip:100@acme.com>;tag=11
 	*/
-	const std::string SipAddress::getAddressTag();
+	const std::string getAddressTag();
 	Json::Value toJson(bool deep);
 	
 	/**

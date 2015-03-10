@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include "LoggerFunc.h"
 
 class ConfigWSListener
 {
@@ -34,6 +35,8 @@ public:
 	std::string certificateChainFile;
 	std::string certificatePKFile;
 	std::vector<std::string> keys;
+
+	TLoggerFunc cbLogger;
 
 	ConfigWSListener();
 	~ConfigWSListener();

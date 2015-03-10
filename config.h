@@ -43,6 +43,9 @@
 /* Define to 1 if you have the `crypto' library (-lcrypto). */
 #define HAVE_LIBCRYPTO 1
 
+/* Define to 1 if you have the `dl' library (-ldl). */
+#define HAVE_LIBDL 1
+
 /* Define to 1 if you have the `event' library (-levent). */
 #define HAVE_LIBEVENT 1
 

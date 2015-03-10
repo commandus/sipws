@@ -91,6 +91,7 @@
     <ClInclude Include="Deamonize.h" />
     <ClInclude Include="HTTPListener.h" />
     <ClInclude Include="Logger.h" />
+    <ClInclude Include="LoggerFunc.h" />
     <ClInclude Include="MessageDigest.h" />
     <ClInclude Include="RegistryEntry.h" />
     <ClInclude Include="RegistryRequest.h" />
@@ -116,6 +117,7 @@
     <ClCompile Include="consolelocale.cpp" />
     <ClCompile Include="Deamonize.cpp" />
     <ClCompile Include="HTTPListener.cpp" />
+    <ClCompile Include="LoggerFunc.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="MessageDigest.cpp" />
     <ClCompile Include="RegistryEntry.cpp" />
