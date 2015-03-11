@@ -336,7 +336,7 @@ int main(int argc, char* argv[])
 	v = argsplit(cmdline, &c);
 	v = argappend(&c, argc, argv, c, v);
 	parseCmd(c, v, config, argc);
-	config.cbLogger = loadLogger("logger", "log", &loggerhandle);
+	config.cbLogger = loadLogger(config.binpath, "logger", "mylog", &loggerhandle);
 
 	if (config.deamonize)
 		Deamonize deamonize(progname, run, stopRequest, done);

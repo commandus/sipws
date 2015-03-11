@@ -55,7 +55,7 @@ void Logger::log(int aseverity, const std::string value)
 
 std::ostream *Logger::lout(int aseverity)
 {
-	if (aseverity >= severity)
+	if (aseverity <= severity)
 		return os;
 	else
 		return NULL;

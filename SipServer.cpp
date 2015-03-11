@@ -233,6 +233,9 @@ void SipServer::doProcessMessage(SipMessage &msgIn, time_t now)
 	
 	for (SipMessage m : response) 
 	{
+		if (config->cbLogger)
+			config->cbLogger(now, m.mCommand, m.mCode, m.KeyFrom, m.Key, m.mCommand == C_MESSAGE ? m.Sdp : "");
+
 		if (!sendMessage(m)) 
 		{
 			if (logger && logger->lout(VERB_WARN))
@@ -273,8 +276,6 @@ bool SipServer::sendMessage(SipMessage &m)
 		if (logger && logger->lout(VERB_DEBUG))
 			*logger->lout(VERB_DEBUG) << "Send to " << addr2String(&m.Address) << ":" << m.Address.sin_port << std::endl
 			<< s << std::endl << std::endl;
-		if (config->cbLogger)
-			config->cbLogger(m.mCommand, m.mCode, m.KeyFrom, m.Key, m.mCommand == C_MESSAGE?m.Sdp:"");
 		return sendto(socket, s.data(), sz, 0, (const sockaddr*)&m.Address, sizeof(struct sockaddr)) >= 0;
 	}
 		

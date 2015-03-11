@@ -180,6 +180,10 @@ bool WSListener::processMessage(websocketpp::connection_hdl &hdl, const serverPl
 			setStateKey(hdl, key);
 		}
 		m.conn = &hdl;
+
+		if (config->cbLogger)
+			config->cbLogger(now, m.mCommand, m.mCode, m.KeyFrom, m.Key, m.mCommand == C_MESSAGE ? m.Sdp : "");
+
 		if (!sendMessage(m))
 		{
 			if ((next == NULL) || (!next->sendMessage(m)))
@@ -219,9 +223,6 @@ bool WSListener::sendMessage(SipMessage &m)
 
 	try
 	{
-		if (config->cbLogger)
-			config->cbLogger(m.mCommand, m.mCode, m.KeyFrom, m.Key, m.mCommand == C_MESSAGE ? m.Sdp : "");
-
 		if (m.Key.empty())
 		{
 			if (m.conn)

@@ -6,17 +6,17 @@
 #endif
 
 
-TLoggerFunc loadLogger(const std::string &name, const std::string &funcname, void **handle)
+TLoggerFunc loadLogger(const std::string &path, const std::string &name, const std::string &funcname, void **handle)
 {
 	TLoggerFunc r = NULL;
 	std::string p(name);
 #ifdef WIN32
-	p = ".\\" + p + ".dll";
+	p = path + "\\" + p + ".dll";
 	*handle = LoadLibraryA(p.c_str());
 	if (*handle)
 		r = (TLoggerFunc)GetProcAddress((HMODULE) *handle, funcname.c_str());
 #else
-	p = "./" + p + ".so";
+	p = path + "/lib" + p + ".so";
 	*handle = dlopen(p.c_str(), RTLD_NOW);
 	if (*handle)
 		r = (TLoggerFunc) dlsym(*handle, funcname.c_str());
