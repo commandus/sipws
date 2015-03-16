@@ -255,8 +255,16 @@ void SipRegistry::clean()
 	time_t d;
 	time(&d);
 
-	for (TSipAddressList::iterator it = list.begin(); it != list.end(); ++it) {
+	TSipAddressList::iterator it = list.begin();
+	while (it != list.end())
+	{
 		if (it->second.isExpired(d))
-				list.erase(it);
+		{
+			TSipAddressList::iterator toErase = it;
+			++it;
+			list.erase(toErase);
+		}
+		else
+			++it;
 	}
 }
