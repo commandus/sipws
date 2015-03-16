@@ -107,15 +107,18 @@ bool SipServer::start(int proto, int port)
 void SipServer::stop(int proto)
 {
 	closeSocket(proto);
-	if (mSvcThread[proto] == NULL)
+	if (!mSvcThread[proto])
 		return;
 	mSvcThread[proto]->interrupt();
 }
 
 void SipServer::wait(int proto)
 {
-	mSvcThread[proto]->join();
-	mSvcThread[proto] = NULL;
+	if (mSvcThread[proto])
+	{
+		mSvcThread[proto]->join();
+		mSvcThread[proto] = NULL;
+	}
 }
 
 void SipServer::runUdp()
