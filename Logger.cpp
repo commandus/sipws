@@ -7,7 +7,6 @@
 #include <streambuf>
 
 #include <cctype>
-#include "sipwsUtil.h"
 
 Logger::Logger() 
 	: severity(VERB_FATAL), os(&std::cerr), isDeamon(false)

@@ -5,7 +5,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <iostream>
-#include "sipwsUtil.h"
 
 #ifdef WIN32
 #include <windows.h>
@@ -40,7 +39,7 @@ Deamonize::Deamonize(const std::string &daemonName,
 	int r = init();
 	if (r)
 	{
-		std::cerr << "Error daemonize " << r << ": " << getSystemErrorDescription(r) << std::endl;
+		std::cerr << "Error daemonize " << r << std::endl;
 	}
 }
 

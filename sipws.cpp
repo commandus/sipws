@@ -143,7 +143,7 @@ std::string onGet(const std::string &path, const std::string &data)
 }
 
 /*
-	Paramaters:
+	Parameters:
 	argcFromCommandLine	argumemt count before merge with arguments from sipws.cfg
 */
 int parseCmd(int argc, char* argv[], ConfigWSListener &config, int argcFromCommandLine)
