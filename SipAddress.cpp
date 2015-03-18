@@ -105,7 +105,7 @@ SipAddress::SipAddress(TProto defProto, const std::string &line) :
 	Availability(AVAIL_NO),
 	Origin(ORIGIN_NETWORK),
 	Host(""),
-	Port(5060),
+	Port(0),
 	CommonName(""),
 	Description(""),
 	Image(""),

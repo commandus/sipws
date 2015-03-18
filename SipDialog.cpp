@@ -32,7 +32,9 @@ void SipDialog::updateLocation(struct sockaddr_in *sender, SipMessage &m, SipMes
 {
 	int remotePort = parseInt(m.getHeaderParameter("V", "rport"), sender->sin_port);
 	// int remotePort = sender->sin_port;
-	SipAddress aFrom(m.Proto, m.Headers["T"]);	// not "M" Contact
+	SipAddress aFrom(m.Proto, m.Headers["T"]);	// "T" not "M" Contact
+	if (aFrom.Port != 0)
+		remotePort = aFrom.Port;
 	int expires = m.getExpires();
 	mRegistry->put(m.Proto, aFrom.Id, mRegistry->Domain, aFrom.Tag, addr2String(sender), remotePort, expires, registered);
 
