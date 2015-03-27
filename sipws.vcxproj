@@ -100,6 +100,7 @@
     <ClInclude Include="SipAddress.h" />
     <ClInclude Include="SipDialog.h" />
     <ClInclude Include="SipListener.h" />
+    <ClInclude Include="SipLocation.h" />
     <ClInclude Include="SipMessage.h" />
     <ClInclude Include="SipRegistry.h" />
     <ClInclude Include="SipServer.h" />
@@ -127,6 +128,7 @@
     <ClCompile Include="SipAddress.cpp" />
     <ClCompile Include="SipDialog.cpp" />
     <ClCompile Include="SipListener.cpp" />
+    <ClCompile Include="SipLocation.cpp" />
     <ClCompile Include="SipMessage.cpp" />
     <ClCompile Include="SipRegistry.cpp" />
     <ClCompile Include="SipServer.cpp" />
