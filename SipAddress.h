@@ -3,33 +3,29 @@
 
 #include <string>
 #include <time.h>
-#include "json/json.h"
+#include <json/json.h>
 
 #include "sipwsUtil.h"
+#include "SipLocation.h"
 
 class SipAddress
 {
 protected:
 	static std::string getParam(const std::string &line, const std::string &name, int start);
+	/* erase expired locations */
+	void clean(const time_t dt);
 public:
-	TAvailability Availability;
-	TProto Proto;	// udp, tcp, ws
-	TPrefix Prefix;	// sip, sips, ws, wss
 	TOrigin Origin;
+	SipLocations locations;
 	std::string Password;
+	// name 
 	std::string CommonName;
+	// description
 	std::string Description;
 	std::string Id;
 	std::string Domain;
-	std::string Host;
-	int Port;
-	std::string Line;
-	std::string Tag;
-	std::string Rinstance;
-	int Expire;
-	time_t Registered;
 	/**
-	* Photo, name and description update time
+	* update time
 	*/
 	time_t Updated;
 	/**
@@ -39,14 +35,25 @@ public:
 	SipAddress();
 	SipAddress(const SipAddress &value);
 	SipAddress(const Json::Value &value);
-	SipAddress(TProto proto, const std::string &domain, const std::string &id, struct sockaddr_in *address, int port, int expire, TAvailability availability);
 	SipAddress(TProto proto, const std::string &domain, const std::string &id, const std::string &passwd, const std::string &cn, const std::string &description, const std::string &image);
+	/*
+	<sip:100@acme.com>;tag=11
+	*/
+	const std::string getAddressTag();
+	
 	/**
 	* sip:103@192.168.7.1:5060;rinstance=987e406d3f7c951d
 	* "102" <sip:102@192.168.7.10>;tag=as533bb2a9
 	*/
-	SipAddress(TProto defProto, const std::string &line);
+	SipAddress(TProto defProto, const std::string &line, time_t now);
 	~SipAddress();
+
+	SipLocations::iterator getLocationIterator(const time_t since);
+	SipLocations::iterator getLocationIterator(const SipLocation &search, const time_t since);
+	/* if location does not exists, creates. */
+	SipLocation *getLocation(time_t now);
+	SipLocation &putLocation(const SipLocation &value, const time_t dt);
+	bool rmLocation(const SipLocation *value, const time_t dt);
 
 	const std::string getKey();
 	/*
@@ -54,10 +61,6 @@ public:
 	*/
 	const std::string getAddress();
 
-	/*
-	<sip:100@acme.com>;tag=11
-	*/
-	const std::string getAddressTag();
 	Json::Value toJson(bool deep);
 	
 	/**

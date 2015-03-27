@@ -35,11 +35,18 @@ private:
 	*/
 	void validateTransport(TProto proto, std::map<std::string, std::string> &headers);
 	void addWWWAuthenticate(struct sockaddr_in *svcsocket, const std::string &method, std::map<std::string, std::string> &headers, SipMessage &r);
-	bool authenticate(const std::string &method, std::map<std::string, std::string> &headers);
+	/*
+		Return true if Authorization is valid
+	*/
+	bool authenticate(const std::string &method, const AuthParams &authparams);
+	/*
+	Check is message issued by user
+	*/
+	bool isByUser(const std::string &id, const std::string &domain, SipMessage &m);
 public:
 	SipDialog(SipRegistry *registry, Logger *logger);
 	~SipDialog();
-	std::string getTag();
+	std::string getTag(SipMessage &m);
 	/**
 	* process responses
 	* @param proto

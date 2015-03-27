@@ -22,7 +22,6 @@
 
 static const char* cmdlist[] {"put", "list", "start", "stop", "clear", ""};
 static const char* oplist[] { "+", "-", "" };
-static const char* availlist[] { "0", "1" };
 static const char* protolist[] { "", "udp", "tcp", "ws" };
 static const char* prefixlist[] { "", "sip", "sips", "ws", "wss" };
 static const char* originlist[] { "registry", "network" };
@@ -104,13 +103,6 @@ std::string toString(EOperation value)
 	return oplist[(int)value];
 }
 
-std::string toString(TAvailability value)
-{
-	if ((value < AVAIL_NO) || (value > AVAIL_YES))
-		return "";
-	return availlist[(int)value];
-}
-
 std::string toString(TProto value)
 {
 	if ((value < PROTO_UNKN) || (value > PROTO_WS))
@@ -164,18 +156,6 @@ EOperation parseOperation(const std::string &value)
 		if (value.compare(oplist[1]) == 0)
 			return entryremove;
 	return entrynop;
-}
-
-TAvailability parseAvailability(const std::string &value)
-{
-	if (&value == NULL)
-		return AVAIL_NO;
-	if (value.compare(availlist[0]) == 0)
-		return AVAIL_NO;
-	else
-		if (value.compare(availlist[1]) == 0)
-			return AVAIL_YES;
-	return AVAIL_NO;
 }
 
 TProto parseProto(const std::string &value)

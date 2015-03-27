@@ -248,7 +248,7 @@ std::string SipMessage::toString(bool fullheader)
 }
 
 /**
-* Return "Expires" tag value
+* Return "Expires" value
 * @return expiration period in seconds
 */
 int SipMessage::getExpires() 
@@ -257,7 +257,7 @@ int SipMessage::getExpires()
 }
 
 /**
-* Return true if "Expires" tag equals 0
+* Return true if "Expires" equals 0
 * @return
 */
 bool SipMessage::isExpired() 

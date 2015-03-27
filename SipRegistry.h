@@ -3,11 +3,14 @@
 
 #include <string>
 #include <map>
-#include "json/json.h"
+#include <json/json.h>
+
 #include "SipAddress.h"
 #include "Logger.h"
 
 typedef std::map<std::string, SipAddress> TSipAddressList;
+
+#define DEF_EXPIRATION_SEC	3600
 
 class SipRegistry
 {
@@ -47,21 +50,14 @@ public:
 	*/
 	void clean();
 
-	void put(SipAddress &value);
 	/**
 	* Add address to the location database
-	* @param proto transport protocol
-	* @param id user identifier
-	* @param domain SIP domain
-	* @param address InetAddress
-	* @param port IP port number
+	* @param value address
 	* @return true if it is my address!
 	*/
-	void put(TProto proto, const std::string &id, const std::string &domain, const std::string &tag, struct sockaddr_in *address, int expire, time_t registered);
-	void put(TProto proto, const std::string &id, const std::string &domain, const std::string &tag, const std::string &host, int port, int expire, time_t registered);
-	bool setAvailability(TProto proto, const std::string &id, const std::string &domain, TAvailability value);
+	void put(SipAddress &value);
 	bool exist(const std::string &key);
-	bool get(const std::string &key, SipAddress &value);
+	SipAddress *get(const std::string &key);
 
 	/**
 	* Return registered SipAddress
@@ -69,7 +65,7 @@ public:
 	* @return null if not registered
 	* @see #getById(String, String)
 	*/
-	bool getByAddress(const std::string &address, SipAddress &result);
+	SipAddress *getByAddress(const std::string &address);
 
 	/**
 	* Return registered SipAddress
@@ -78,7 +74,7 @@ public:
 	* @return null if not registered
 	* @see #getByAddress(String)
 	*/
-	bool getById(const std::string &id, const std::string &domain, SipAddress &result);
+	SipAddress *getById(const std::string &id, const std::string &domain);
 	Json::Value toJson(bool deep);
 };
 

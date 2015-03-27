@@ -125,7 +125,7 @@ const int SESSION_NOT_ACCEPTABLE = 606;
 enum ECommand { commandput = 0, commandlist = 1, commandstart = 2, commandstop = 3, commandclear = 4, commandnop = 5 };
 enum EOperation { entryadd = 0, entryremove = 1, entrynop = 3 };
 
-enum TAvailability { AVAIL_NO = 0, AVAIL_YES = 1 };
+// enum TAvailability { AVAIL_NO = 0, AVAIL_YES = 1 };
 #define PROTO_SIZE	4
 enum TProto { PROTO_UNKN = 0, PROTO_UDP = 1, PROTO_TCP = 2, PROTO_WS = 3 };
 
@@ -139,7 +139,6 @@ std::string size_t2Hex(size_t value, int width);
 std::string time_t2Dec(time_t value);
 std::string toString(ECommand value);
 std::string toString(EOperation value);
-std::string toString(TAvailability value);
 std::string toString(TProto value);
 std::string toString(TPrefix value);
 std::string toString(TOrigin value);
@@ -156,7 +155,6 @@ int parseInt(const std::string &value, int defval);
 size_t parseHex(const std::string &value);
 ECommand parseCommand(const std::string &value);
 EOperation parseOperation(const std::string &value);
-TAvailability parseAvailability(const std::string &value);
 TProto parseProto(const std::string &value);
 TPrefix parsePrefix(const std::string &value);
 TOrigin parseOrigin(const std::string &value);

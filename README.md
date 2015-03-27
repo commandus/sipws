@@ -8,7 +8,7 @@ Simple all-in-one SIP server UDP, TCP, WS (websocket) transport.
 
 SIP accounts managed by POST Json requests served by embedded HTTP server.
 
-This is beta.
+This is a beta.
 
 Build
 -----

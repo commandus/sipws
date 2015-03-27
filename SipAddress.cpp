@@ -3,24 +3,15 @@
 #include <iostream>
 #include <sstream>
 #include <cctype>
+#include <algorithm>
 
 SipAddress::SipAddress() :
-	Availability(AVAIL_NO),
 	Origin(ORIGIN_NETWORK),
-	Proto(PROTO_UNKN),
-	Prefix(PREFIX_UNKN),
 	Password(""),
 	CommonName(""),
 	Description(""),
 	Id(""),
 	Domain(""),
-	Host(""),
-	Port(0),
-	Line(""),
-	Tag(""),
-	Rinstance(""),
-	Expire(DEF_EXPIRES),
-	Registered(0),
 	Updated(0),
 	Image("")
 {
@@ -29,68 +20,29 @@ SipAddress::SipAddress() :
 
 SipAddress::SipAddress(const SipAddress &value)
 {
-	this->Availability = value.Availability;
 	this->Origin = value.Origin;
-	this->Proto = value.Proto;
-	this->Prefix = value.Prefix;
 	this->Password = value.Password;
 	this->CommonName = value.CommonName;
 	this->Description = value.Description;
 	this->Id = value.Id;
 	this->Domain = value.Domain;
-	this->Host = value.Host;
-	this->Port = value.Port;
-	this->Line = value.Line;
-	this->Tag = value.Tag;
-	this->Rinstance = value.Rinstance;
-	this->Expire = value.Expire;
-	this->Registered = value.Registered;
 	this->Updated = value.Updated;
 	this->Image = value.Image;
+
+	for (SipLocations::const_iterator it = value.locations.begin(); it != value.locations.end(); ++it)
+	{
+		this->locations.push_back(*it);
+	}
 }
 
-SipAddress::SipAddress(TProto proto, const std::string &domain, const std::string &id, struct sockaddr_in *address, int port, int expire, TAvailability availability)
+SipAddress::SipAddress(TProto proto, const std::string &domain, const std::string &id, const std::string &passwd, const std::string &cn, const std::string &description, const std::string &image) 
 	:
-	Proto(proto),
-	Prefix(PREFIX_UNKN),
-	Origin(ORIGIN_NETWORK),
-	Availability(availability),
-	Port(port),
-	CommonName(""),
-	Description(""),
-	Image(""),
-	Id(id),
-	Domain(domain),
-	Rinstance(""),
-	Tag(""),
-	Line(""),
-	Expire(expire),
-	Password("")
-{
-	Host = addr2String(address);
-	time(&Registered);
-	Updated = Registered;
-}
-
-SipAddress::SipAddress(TProto proto, const std::string &domain, const std::string &id, const std::string &passwd, const std::string &cn, const std::string &description, const std::string &image)
-	:
-	Proto(proto),
-	Prefix(PREFIX_UNKN),
 	Origin(ORIGIN_REGISTRY),
-	Availability(AVAIL_NO),
-	Port(5060),
-	Rinstance(""),
-	Tag(""),
-	Line(""),
-	Registered(0),
 	Updated(0),
-	Expire(DEF_EXPIRES),	// 1 hour in seconds
-
 	CommonName(cn),
 	Description(description),
 	Image(image),
 	Id(id),
-	Host(""),
 	Domain(domain),
 	Password(passwd)
 {
@@ -101,24 +53,18 @@ SipAddress::SipAddress(TProto proto, const std::string &domain, const std::strin
 * sip:103@192.168.7.1:5060;rinstance=987e406d3f7c951d
 * "102" <sip:102@192.168.7.10>;tag=as533bb2a9
 */
-SipAddress::SipAddress(TProto defProto, const std::string &line) :
-	Availability(AVAIL_NO),
+SipAddress::SipAddress(TProto defProto, const std::string &line, time_t now) :
 	Origin(ORIGIN_NETWORK),
-	Host(""),
-	Port(0),
 	CommonName(""),
 	Description(""),
 	Image(""),
 	Id(""),
 	Domain(""),
-	Rinstance(""),
-	Tag(""),
-	Line(""),
-	Expire(DEF_EXPIRES),	// 1 hour in seconds
 	Password("")
 {
-	time(&Registered);
-	Updated = Registered;
+	Updated = now;
+	SipLocation location;
+	location.Registered = now;
 
 	if (&line == NULL) 
 		return;
@@ -126,8 +72,8 @@ SipAddress::SipAddress(TProto defProto, const std::string &line) :
 	// sip:, sips:, ws: wss:
 	int pId = line.find(":");
 	int pHost;
-	Proto = defProto;
-	Prefix = PREFIX_UNKN;
+	location.Proto = defProto;
+	location.Prefix = PREFIX_UNKN;
 	if (pId < 0) {
 		// try to parse w/o prefix
 		Id = "";
@@ -137,16 +83,16 @@ SipAddress::SipAddress(TProto defProto, const std::string &line) :
 	{
 		std::string pr(line.substr(0, pId));
 		if (contains("sips", pr))
-			Prefix = PREFIX_SIPS;
+			location.Prefix = PREFIX_SIPS;
 		else
 			if (contains("sip", pr))
-				Prefix = PREFIX_SIP;
+				location.Prefix = PREFIX_SIP;
 			else
 				if (contains("wss", pr))
-					Prefix = PREFIX_WS;
+					location.Prefix = PREFIX_WS;
 				else
 					if (contains("ws", pr))
-						Prefix = PREFIX_WSS;
+						location.Prefix = PREFIX_WSS;
 
 		pHost = line.find("@", pId + 1);
 		if (pHost <= 0)
@@ -165,7 +111,7 @@ SipAddress::SipAddress(TProto defProto, const std::string &line) :
 	else {
 		pPort++;
 		int pPortEnd = line.length();
-		for (int i = pPort + 1; i < line.length(); i++) {
+		for (unsigned int i = pPort + 1; i < line.length(); i++) {
 			char c = line.at(i);
 			if (!std::isdigit(c)) {
 				pPortEnd = i;
@@ -174,7 +120,7 @@ SipAddress::SipAddress(TProto defProto, const std::string &line) :
 		}
 		try 
 		{
-			Port = parseInt(line.substr(pPort, pPortEnd - pPort));
+			location.Port = parseInt(line.substr(pPort, pPortEnd - pPort));
 		}
 		catch (...) 
 		{
@@ -189,23 +135,21 @@ SipAddress::SipAddress(TProto defProto, const std::string &line) :
 				break;
 			}
 		}
-		Host = line.substr(pHost + 1, pPort - pHost - 1);
-
-		Line = getParam(line, "line", pPort);
-
-		Tag = getParam(line, "tag", pPort);
-
-		Rinstance = getParam(line, "rinstance", pPort);
+		Domain = line.substr(pHost + 1, pPort - pHost - 1);
+		location.Host = Domain;
+		location.Line = getParam(line, "line", pPort);
+		location.Tag = getParam(line, "tag", pPort);
+		location.Rinstance = getParam(line, "rinstance", pPort);
 
 		std::string s = getParam(line, "proto", pPort);
 		if (s.length() > 0)
-			Proto = parseProto(s);
+			location.Proto = parseProto(s);
 
 		s = getParam(line, "registered", pPort);
 		if (s.length() > 0) {
 			try 
 			{
-				Registered = parseTime_t(s);
+				location.Registered = parseTime_t(s);
 			}
 			catch (...)
 			{
@@ -216,7 +160,7 @@ SipAddress::SipAddress(TProto defProto, const std::string &line) :
 		if (s.length() > 0) {
 			try 
 			{
-				Expire = parseInt(s);
+				location.Expire = parseInt(s);
 			}
 			catch (...) 
 			{
@@ -225,6 +169,7 @@ SipAddress::SipAddress(TProto defProto, const std::string &line) :
 	}
 	catch (...) {
 	}
+	locations.push_back(location);
 }
 
 
@@ -255,8 +200,9 @@ const std::string SipAddress::getAddressTag()
 {
 	std::stringstream s;
 	s << "<sip:" << Id << "@" << Domain << ">";
-	if (!Tag.empty()) 
-		s << ";tag=" << Tag;
+	SipLocations::iterator it = getLocationIterator(0);
+	if ((it != locations.end()) && (!it->Tag.empty())) 
+		s << ";tag=" << it->Tag;
 	return s.str();
 }
 
@@ -270,37 +216,30 @@ const std::string SipAddress::getAddress()
 	return s.str();
 }
 
-
 SipAddress::SipAddress(const Json::Value &value)
 {
-	Availability = parseAvailability(value["avail"].asString());
-	Proto = parseProto(value["proto"].asString());
-	Prefix = parsePrefix(value["prefix"].asString());
 	Origin = parseOrigin(value["origin"].asString());
 	Password = value["password"].asString();
 	CommonName = value["cn"].asString();
 	Description = value["description"].asString();
 	Id = value["id"].asString();
 	Domain = value["domain"].asString();
-	Host = value["host"].asString();
-	Port = value["port"].asInt();
-	Line = value["line"].asString();
-	Tag = value["tag"].asString();
-	Rinstance = value["rinstance"].asString();
-	Expire = value["expire"].asInt();
-	Registered = value["registered"].asUInt64();
 	Updated = value["updated"].asUInt64();
 	Image = value["image"].asString();
+
+	Json::Value locs = value["locations"];
+	if (locs.isArray())
+	{
+		for (unsigned int i = 0; i < locs.size(); ++i)
+		{
+			locations.push_back(SipLocation(locs[i]));
+		}
+	}
 }
 
 Json::Value SipAddress::toJson(bool deep)
 {
 	Json::Value r(Json::objectValue);
-	r["avail"] = toString(Availability);
-	if (Proto != PROTO_UNKN)
-		r["proto"] = toString(Proto);
-	if (Prefix != PREFIX_UNKN)
-		r["prefix"] = toString(Prefix);
 	r["origin"] = toString(Origin);
 	if (deep)
 	{
@@ -315,24 +254,17 @@ Json::Value SipAddress::toJson(bool deep)
 		r["id"] = Id;
 	if ((&Domain != NULL) && (!Domain.empty()))
 		r["domain"] = Domain;
-	if ((&Host != NULL) && (!Host.empty()))
-		r["host"] = Host;
-	if (Port)
-		r["port"] = Port;
-	if ((&Line != NULL) && (!Line.empty()))
-		r["line"] = Line;
-	if ((&Tag != NULL) && (!Tag.empty()))
-		r["tag"] = Tag;
-	if ((&Rinstance != NULL) && (!Rinstance.empty()))
-		r["rinstance"] = Rinstance;
-	if (Expire)
-		r["expire"] = Expire;
-	if (Registered)
-		r["registered"] = (Json::Value::UInt64) Registered;
 	if (Updated)
 		r["updated"] = (Json::Value::UInt64) Updated;
 	if ((&Image != NULL) && (!Image.empty()))
 		r["image"] = Image;
+
+	Json::Value locs(Json::arrayValue);
+	for (SipLocations::iterator it = locations.begin(); it != locations.end(); ++it)
+	{
+		locs.append(it->toJson());
+	}
+	r["locations"] = locs;
 	return r;
 }
 
@@ -365,7 +297,7 @@ std::string SipAddress::parseUid(const std::string &line)
 	// no sip: , @ so it must be uid itself
 	if ((line.find(':', 0) == std::string::npos) && (line.find('@', 0) == std::string::npos))
 		return line;
-	SipAddress a (PROTO_UNKN, line);
+	SipAddress a (PROTO_UNKN, line, 0);
 	return a.Id;
 }
 
@@ -376,7 +308,10 @@ std::string SipAddress::parseUid(const std::string &line)
 */
 bool SipAddress::isExpired(time_t since) 
 {
-	return (Availability == AVAIL_NO) || (Registered + Expire) < since;
+	if (!&locations)
+		return false;
+	SipLocations::iterator r = getLocationIterator(since);
+	return (r == locations.end());
 }
 
 /**
@@ -399,12 +334,106 @@ std::string SipAddress::toContact()
 	std::stringstream b;
 	if (!CommonName.empty())
 		b << "\"" << replaceChar(CommonName, '\"', ' ') << "\" ";
-	b << "<sip:" << Id << "@" << Domain << ":" << Port;
-	std::string p(toString(Proto));
-	if (!p.empty())
-		b << ";proto=" << p << ">";
+	
+	b << "<sip:" << Id << "@" << Domain;
 
-	if (!Tag.empty())
-		b << ";tag=" << Tag;
+	SipLocations::iterator l = getLocationIterator(0);
+	if (l != locations.end())
+	{
+		b << ":" << l->Port;
+		std::string p(toString(l->Proto));
+		if (!p.empty())
+			b << ";proto=" << p;
+	}
+	b << ">";
+	if (l != locations.end())
+	{
+		if (!l->Tag.empty())
+			b << ";tag=" << l->Tag;
+	}
 	return b.str();
 }
+
+/* erase expired locations */
+void SipAddress::clean(const time_t dt)
+{
+	struct isold
+	{
+		time_t since;
+		isold(time_t d) : since(d) { };
+		bool operator()(SipLocation&it) const
+		{
+			return it.isExpired(since);
+		}
+	};
+	SipLocations::iterator it = std::remove_if(locations.begin(), locations.end(), isold(dt));
+	locations.erase(it, locations.end());
+}
+
+/*
+	Parameters
+		since	!= 0 delete expired since date time
+*/
+SipLocations::iterator SipAddress::getLocationIterator(const SipLocation &search, const time_t since)
+{
+	clean(since);
+
+	struct issame
+	{
+		const SipLocation &search;
+		issame(const SipLocation &s) : search(s) { };
+		bool operator()(const SipLocation& it) const
+		{
+			return (((search.Proto == PROTO_UNKN) || ((it.Proto == search.Proto) && (it.Prefix == search.Prefix) 
+				&& (it.Host == search.Host) && (it.Port == search.Port) && (it.Tag == search.Tag)))
+				&& (search.Line.empty() || (it.Line == search.Line))
+				&& (search.Rinstance.empty() || (it.Rinstance == search.Rinstance))
+				);
+		}
+	};
+
+	SipLocations::iterator it = locations.begin();
+	return std::find_if(it, locations.end(), issame(search));
+}
+
+/*
+	Return last updated or locations.end
+*/
+SipLocations::iterator SipAddress::getLocationIterator(const time_t since)
+{
+	SipLocation l;
+	return getLocationIterator(l, since);
+}
+
+SipLocation *SipAddress::getLocation(time_t now)
+{
+	SipLocations::iterator it = getLocationIterator(now);
+	if (it == locations.end())
+	{
+		SipLocation l;
+		locations.push_back(l);
+		it = locations.begin();
+	}
+	return &*it;
+}
+
+bool SipAddress::rmLocation(const SipLocation *value, const time_t dt)
+{
+	SipLocations::iterator it = getLocationIterator(*value, dt);
+	if (it == locations.end())
+		return false;
+	locations.erase(it);
+	return true;
+}
+
+SipLocation &SipAddress::putLocation(const SipLocation &value, const time_t dt)
+{
+	SipLocations::iterator it = getLocationIterator(value, dt);
+	if (it != locations.end())
+		locations.erase(it);
+	locations.push_back(value);
+	SipLocations::reverse_iterator rit = locations.rbegin();
+	rit->Registered = dt;
+	return *rit;
+}
+

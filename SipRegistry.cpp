@@ -1,12 +1,13 @@
 #include "SipRegistry.h"
+#include <algorithm>
 
 SipRegistry::SipRegistry() 
-	: Domain(""), Ip(""), logger(NULL), Expires(300), dbFileName(""), version(0)
+	: Domain(""), Ip(""), logger(NULL), Expires(DEF_EXPIRATION_SEC), dbFileName(""), version(0)
 {
 }
 
 SipRegistry::SipRegistry(Logger *alogger, const std::string dbfn) 
-	: Domain(""), Ip(""), logger(alogger), dbFileName(dbfn), Expires(300), version(0)
+	: Domain(""), Ip(""), logger(alogger), dbFileName(dbfn), Expires(DEF_EXPIRATION_SEC), version(0)
 {
 	load();
 }
@@ -47,75 +48,17 @@ void SipRegistry::put(SipAddress &value)
 		*logger->lout(VERB_DEBUG) << "Put " << value.toContact() << std::endl;
 }
 
-/**
-* Add address to the location database
-* @param proto transport protocol
-* @param id user identifier
-* @param domain SIP domain
-* @param address InetAddress
-* @param port IP port number
-* @return true if it is my address!
-*/
-void SipRegistry::put(TProto proto, const std::string &id, const std::string &domain, const std::string &tag, struct sockaddr_in *address, int expire, time_t registered)
-{
-	put(proto, id, domain, tag, addr2String(address), address->sin_port, expire, registered);
-}
-
-
-/**
-* Add address to the location database
-* @param proto transport protocol
-* @param id user identifier
-* @param domain SIP domain
-* @param address InetAddress
-* @param port IP port number
-* @return true if it is my address!
-*/
-void SipRegistry::put(TProto proto, const std::string &id, const std::string &domain, const std::string &tag, const std::string &host, int port,
-	int expire, time_t registered)
-{
-	std::string key = id + "@" + domain;
-	SipAddress a(list[key]);
-	a.Availability = AVAIL_YES;
-	if (proto != PROTO_UNKN)
-		a.Proto = proto;
-	if (!domain.empty())
-		a.Domain = domain;
-	if (!id.empty())
-		a.Id = id;
-	a.Tag = tag;
-	a.Host = host;
-	a.Port = port;
-	a.Expire = (expire == 0 ? DEF_EXPIRES : expire);
-	a.Registered = registered;
-	list[key] = a;
-
-	if (logger && logger->lout(VERB_DEBUG))
-		*logger->lout(VERB_DEBUG) << "Update " << a.toContact() << std::endl;
-
-}
-
-bool SipRegistry::setAvailability(TProto proto, const std::string &id, const std::string &domain, TAvailability value)
-{
-	TSipAddressList::iterator it = list.find(id + "&" + domain);
-	if (it == list.end())
-		return false;
-	it->second.Availability = value;
-	return true;
-}
-
 bool SipRegistry::exist(const std::string &key)
 {
 	return list.find(key) != list.end();
 }
 
-bool SipRegistry::get(const std::string &key, SipAddress &value)
+SipAddress *SipRegistry::get(const std::string &key)
 {
 	TSipAddressList::iterator it = list.find(key);
 	if (it == list.end())
-		return false;
-	value = it->second;
-	return true;
+		return NULL;
+	return &it->second;
 }
 
 bool SipRegistry::load(const Json::Value &value)
@@ -211,10 +154,10 @@ Json::Value SipRegistry::toJson(bool deep)
 * @return null if not registered
 * @see #getById(String, String)
 */
-bool SipRegistry::getByAddress(const std::string &address, SipAddress &result)
+SipAddress *SipRegistry::getByAddress(const std::string &address)
 {
-	SipAddress a(PROTO_UNKN, address);
-	return getById(a.Id, a.Host, result);
+	SipAddress a(PROTO_UNKN, address, 0);
+	return getById(a.Id, a.Domain);
 }
 
 /**
@@ -224,9 +167,9 @@ bool SipRegistry::getByAddress(const std::string &address, SipAddress &result)
 * @return null if not registered
 * @see #getByAddress(String)
 */
-bool SipRegistry::getById(const std::string &id, const std::string &domain, SipAddress &result)
+SipAddress *SipRegistry::getById(const std::string &id, const std::string &domain)
 {
-	return get(id + "@" + domain, result);
+	return get(id + "@" + domain);
 }
 
 /**
@@ -255,16 +198,17 @@ void SipRegistry::clean()
 	time_t d;
 	time(&d);
 
-	TSipAddressList::iterator it = list.begin();
-	while (it != list.end())
+	struct isold 
 	{
-		if (it->second.isExpired(d))
+		time_t since;
+		isold(time_t d) : since(d) { };
+		bool operator()(std::pair<const std::string, SipAddress> it) const
 		{
-			TSipAddressList::iterator toErase = it;
-			++it;
-			list.erase(toErase);
+			return it.second.isExpired(since);
 		}
-		else
-			++it;
-	}
+	};
+
+	TSipAddressList::iterator it = list.begin();
+	while ((it = std::find_if(it, list.end(), isold(d))) != list.end())
+		list.erase(it++);
 }
