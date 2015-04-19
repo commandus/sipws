@@ -201,7 +201,7 @@ int parseCmd(int argc, char* argv[], ConfigWSListener &config, int argcFromComma
 		std::cout << "simple websocket SIP service" << std::endl;
 		arg_print_glossary(stdout, argtable, "  %-25s %s\n");
 		arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
-		return 0;
+		return 1;
 	}
 	if (a_locale->count > 0)
 	{
@@ -335,7 +335,11 @@ int main(int argc, char* argv[])
 	char **v;
 	v = argsplit(cmdline, &c);
 	v = argappend(&c, argc, argv, c, v);
-	parseCmd(c, v, config, argc);
+
+	int r = parseCmd(c, v, config, argc);
+	if (r)
+		return r;
+	
 	config.cbLogger = loadLogger(config.binpath, "logger", "mylog", &loggerhandle);
 
 	if (config.deamonize)
